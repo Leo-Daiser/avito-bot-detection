@@ -1,5 +1,19 @@
 # Avito Bot Detection
 
+## English overview
+
+**Offline ML competition solution — bot detection from behavioral event logs.**
+
+- **Hidden test:** **0.80348 precision at recall ≥ 0.70**, compared with a **0.09391** constant baseline on the same test.
+- **Features:** 105 behavioral features, including event timing, searches, pointer movement, and activity diversity.
+- **Model:** ensemble of 5 CatBoost classifiers.
+- **Validation:** 4 out-of-time holdouts, mean precision **0.748** at recall ≥ 0.70; local ROC-AUC around **0.93–0.94**.
+- **Key engineering decision:** exclude events after the observation window *before* aggregating features, preventing temporal leakage.
+
+This is an **offline research/competition pipeline**, not a deployed real-time detection service.
+
+## Detailed technical notes (Russian)
+
 Решение задачи детекции автоматизированного трафика по истории пользовательских событий.
 
 Для каждой `cookie_id` модель возвращает `score` от 0 до 1: чем выше значение, тем больше оснований считать трафик автоматизированным.
