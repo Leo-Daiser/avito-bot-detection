@@ -2,15 +2,20 @@
 
 ## English overview
 
-**Offline ML competition solution — bot detection from behavioral event logs.**
+**Behavioral bot-detection case study | offline ML assessment**
 
-- **Hidden test:** **0.80348 precision at recall ≥ 0.70**, compared with a **0.09391** constant baseline on the same test.
-- **Features:** 105 behavioral features, including event timing, searches, pointer movement, and activity diversity.
-- **Model:** ensemble of 5 CatBoost classifiers.
-- **Validation:** 4 out-of-time holdouts, mean precision **0.748** at recall ≥ 0.70; local ROC-AUC around **0.93–0.94**.
-- **Key engineering decision:** exclude events after the observation window *before* aggregating features, preventing temporal leakage.
+**Problem.** Given cookie metadata and user event logs, rank likely automated traffic while retaining at least 70% recall.
 
-This is an **offline research/competition pipeline**, not a deployed real-time detection service.
+**Results (competition submission):**
+- **Hidden test:** precision **0.80348** at recall ≥ 0.70, versus **0.09391** for the constant baseline.
+- **Temporal validation:** four out-of-time holdouts, mean precision **0.748** at recall ≥ 0.70; local ROC-AUC around **0.93–0.94**.
+- **Model:** an ensemble of five CatBoost classifiers using **105 behavioral features**.
+
+**What mattered technically:** the raw event log includes events outside the permitted observation window. Filtering them **before feature aggregation** prevented the model from learning future information, including post-window captcha events. Feature groups cover timing, activity intensity, search/navigation, pointer movement and behavioral diversity.
+
+**Review the implementation:** [full notebook](./avito_bot_detection.ipynb) · [dependencies](./requirements.txt) · [temporal validation](#validation-strategy) · [failed experiments](#what-i-tried-and-rejected).
+
+**Reproduction:** install `requirements.txt`, provide the original competition data in the layout expected by the notebook, and run the notebook from top to bottom. Raw competition datasets are **not** distributed in this repository; the numeric competition result cannot be independently reproduced without those inputs. This is an offline ML submission, **not** a real-time deployed detection service or employment at Avito.
 
 ## Detailed technical notes (Russian)
 
@@ -266,7 +271,7 @@ Precision@Recall≥0.70 = 0.80348
 0.09391
 ```
 
-Hidden score оказался выше локальных out-of-time оценок, то есть выбранная схема валидации не завышала ожидаемое качество.
+Hidden score оказался выше среднего на четырёх локальных out-of-time выборках. Это согласуется с выбранной оценкой, но само по себе не доказывает отсутствие смещения валидации для других будущих распределений.
 
 ## Reproducibility
 
